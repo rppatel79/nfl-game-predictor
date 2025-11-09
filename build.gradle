@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.nfl'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(23))
+    }
+}
+
+application {
+    mainClass = 'com.example.nfl.predictor.Main'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // CSV parsing
+    implementation 'com.opencsv:opencsv:5.9'
+
+    // (For later) ML library like Tribuo – you can uncomment once ready
+    // implementation 'org.tribuo:tribuo-classification:4.3.1'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+}
+
+test {
+    useJUnitPlatform()
+}
