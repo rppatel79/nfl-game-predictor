@@ -140,6 +140,10 @@ public class NflEtl {
     }
 
     private int parseIntSafe(String s) {
-        return Integer.parseInt(s.trim());
+        try {
+            return Integer.parseInt(s.trim());
+        } catch (Exception e) {
+            return Integer.MIN_VALUE;
+        }
     }
 }

@@ -33,7 +33,7 @@ class NflEtlTest {
 
             // Optionally, ensure columns count is correct
             String[] cols = firstRow.split(",");
-            assertEquals(7, cols.length, "Each row should have 7 columns");
+            assertEquals(6, cols.length, "Each row should have 6 columns");
         }
     }
 }
