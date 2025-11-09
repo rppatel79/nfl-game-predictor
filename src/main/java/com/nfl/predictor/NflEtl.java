@@ -18,8 +18,12 @@ public class NflEtl {
     private static final String INPUT_RESOURCE = "/data/raw_nfl_games.csv";
     private static final String OUTPUT_FILE = "build/nfl_games_for_ml.csv";
 
+    private final Map<String, Integer> teamNumericMap = new HashMap<>();
+
     public void run() {
         try {
+            loadTeamMap();
+
             // Load input CSV from resources
             InputStream is = getClass().getResourceAsStream(INPUT_RESOURCE);
             if (is == null) {
@@ -59,9 +63,8 @@ public class NflEtl {
                     // Output header
                     String[] outHeader = {
                             "season",
-                            "week",
-                            "home_team",
-                            "away_team",
+                            "home_team_id",
+                            "away_team_id",
                             "home_score",
                             "away_score",
                             "home_team_wins"
@@ -80,10 +83,8 @@ public class NflEtl {
                         int homeScore = parseIntSafe(row[idx.get(homeScoreCol)]);
                         int awayScore = parseIntSafe(row[idx.get(awayScoreCol)]);
 
-                        // Skip rows without valid scores (e.g., future schedule)
-                        if (homeScore == Integer.MIN_VALUE || awayScore == Integer.MIN_VALUE) {
-                            continue;
-                        }
+                        int homeTeamNumeric = teamNumericMap.get(homeTeam);
+                        int awayTeamNumeric = teamNumericMap.get(awayTeam);
 
                         // Compute label: 1 if home team wins, 0 if they lose, skip ties for now
                         if (homeScore == awayScore) {
@@ -94,9 +95,8 @@ public class NflEtl {
 
                         String[] outRow = {
                                 season,
-                                week,
-                                homeTeam,
-                                awayTeam,
+                                String.valueOf(homeTeamNumeric),
+                                String.valueOf(awayTeamNumeric),
                                 String.valueOf(homeScore),
                                 String.valueOf(awayScore),
                                 String.valueOf(homeTeamWins)
@@ -113,6 +113,23 @@ public class NflEtl {
         }
     }
 
+    private void loadTeamMap() {
+        try (var reader = Files.newBufferedReader(Path.of("src/main/resources/data/nfl_teams.csv"))) {
+            String line;
+            boolean header = true;
+            while ((line = reader.readLine()) != null) {
+                if (header) { header = false; continue; }
+                String[] parts = line.split(",");
+                String teamId = parts[1].trim();
+                int numericId = Integer.parseInt(parts[0].trim());
+                teamNumericMap.put(teamId, numericId);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error loading team map", e);
+        }
+    }
+
+
     private Map<String, Integer> buildIndexMap(String[] header) {
         Map<String, Integer> idx = new HashMap<>();
         for (int i = 0; i < header.length; i++) {
@@ -123,10 +140,6 @@ public class NflEtl {
     }
 
     private int parseIntSafe(String s) {
-        try {
-            return Integer.parseInt(s.trim());
-        } catch (Exception e) {
-            return Integer.MIN_VALUE;
-        }
+        return Integer.parseInt(s.trim());
     }
 }
