@@ -24,9 +24,19 @@ dependencies {
     // CSV parsing
     implementation 'com.opencsv:opencsv:5.9'
 
-    // (For later) ML library like Tribuo – you can uncomment once ready
-    // implementation 'org.tribuo:tribuo-classification:4.3.1'
+    implementation 'org.tribuo:tribuo-core:4.3.1'
+    implementation 'org.tribuo:tribuo-classification:4.3.1'
+    implementation 'org.tribuo:tribuo-classification-sgd:4.3.1'   // ← LogisticRegressionTrainer lives here
+    implementation 'org.tribuo:tribuo-data:4.3.1'
 
+    // Optional extra trainers
+    implementation 'org.tribuo:tribuo-common-tree:4.3.1'  // Decision trees / Random forests
+
+    // Logging
+    implementation 'org.slf4j:slf4j-simple:2.0.9'
+
+    // Testing
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
 }
 
